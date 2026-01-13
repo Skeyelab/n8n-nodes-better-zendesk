@@ -10,7 +10,7 @@ export class BetterZendeskApi implements ICredentialType {
 
 	displayName = 'Better Zendesk API';
 
-	icon = 'file:betterZendesk.svg';
+	icon: ICredentialType['icon'] = 'file:betterZendesk.svg';
 
 	// Link to your community node's README
 	documentationUrl = 'https://github.com/org/-better-zendesk?tab=readme-ov-file#credentials';

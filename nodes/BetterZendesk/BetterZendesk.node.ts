@@ -3,6 +3,7 @@ import { userDescription } from './resources/user';
 import { companyDescription } from './resources/company';
 import { ticketDescription } from './resources/ticket';
 import { viewDescription } from './resources/view';
+import { ticketFieldDescription } from './resources/ticketField';
 
 export class BetterZendesk implements INodeType {
 	description: INodeTypeDescription = {
@@ -26,8 +27,9 @@ export class BetterZendesk implements INodeType {
 				Accept: 'application/json',
 				'Content-Type': 'application/json',
 			},
-			resolveWithFullResponse: true,
+			// @ts-expect-error - simple and resolveWithFullResponse are valid properties but not in TypeScript definitions
 			simple: false,
+			resolveWithFullResponse: true,
 		},
 		properties: [
 			{
@@ -37,16 +39,20 @@ export class BetterZendesk implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'User',
-						value: 'user',
-					},
-					{
 						name: 'Company',
 						value: 'company',
 					},
 					{
 						name: 'Ticket',
 						value: 'ticket',
+					},
+					{
+						name: 'Ticket Field',
+						value: 'ticketField',
+					},
+					{
+						name: 'User',
+						value: 'user',
 					},
 					{
 						name: 'View',
@@ -58,6 +64,7 @@ export class BetterZendesk implements INodeType {
 			...userDescription,
 			...companyDescription,
 			...ticketDescription,
+			...ticketFieldDescription,
 			...viewDescription,
 		],
 	};
