@@ -46,7 +46,15 @@ export async function zendeskPostReceive(
 ) {
 	if (response.statusCode >= 400) {
 		const headers = pickZendeskErrorHeaders(response.headers);
-		throw new NodeApiError(
+
+		// Build context message with headers for visibility
+		const headerEntries = Object.entries(headers);
+		const headerContext = headerEntries.length > 0
+			? `\n\nResponse Headers:\n${headerEntries.map(([key, value]) => `  ${key}: ${value}`).join('\n')}`
+			: '';
+
+		// Create error with headers in response object
+		const error = new NodeApiError(
 			this.getNode(),
 			{
 				statusCode: response.statusCode,
@@ -55,8 +63,25 @@ export async function zendeskPostReceive(
 				// @ts-expect-error - body can be various types but NodeApiError accepts it
 				body: response.body,
 			},
-			{ httpCode: response.statusCode?.toString() },
+			{
+				httpCode: response.statusCode?.toString(),
+				// Add headers to context for easy access
+				context: {
+					headers: headers as Record<string, string>,
+				},
+			},
 		);
+
+		// Ensure headers are accessible on the error object itself
+		// @ts-expect-error - Adding custom property for header access
+		error.headers = headers as Record<string, string>;
+
+		// Add headers to description if present
+		if (headerContext) {
+			error.message = `${error.message}${headerContext}`;
+		}
+
+		throw error;
 	}
 
 	return items;
