@@ -1,3 +1,8 @@
+## <small>1.0.1 (2026-01-13)</small>
+
+* Merge pull request #20 from Skeyelab/fix/remove-prepublishonly ([65a4a79](https://github.com/Skeyelab/n8n-nodes-better-zendesk/commit/65a4a79)), closes [#20](https://github.com/Skeyelab/n8n-nodes-better-zendesk/issues/20)
+* fix: remove prepublishOnly script that conflicts with semantic-release ([63b32c3](https://github.com/Skeyelab/n8n-nodes-better-zendesk/commit/63b32c3))
+
 ## 1.0.0 (2026-01-13)
 
 * Add comprehensive Copilot instructions for the repository ([d269512](https://github.com/Skeyelab/n8n-nodes-better-zendesk/commit/d269512))

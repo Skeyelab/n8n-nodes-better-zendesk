@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-better-zendesk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Zendesk node with API token auth, dynamic subdomain, and error headers surfaced on failures.",
   "license": "MIT",
   "homepage": "",
