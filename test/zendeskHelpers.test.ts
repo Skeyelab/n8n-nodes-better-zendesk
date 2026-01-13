@@ -15,7 +15,7 @@ import {
 import { prepareTicketCreate, prepareTicketUpdate } from '../nodes/BetterZendesk/resources/ticket/helpers';
 import { ticketFieldDescription } from '../nodes/BetterZendesk/resources/ticketField';
 import { userDescription } from '../nodes/BetterZendesk/resources/user';
-import { companyDescription } from '../nodes/BetterZendesk/resources/company';
+import { organizationDescription } from '../nodes/BetterZendesk/resources/organization';
 import { ticketDescription } from '../nodes/BetterZendesk/resources/ticket';
 import { viewDescription } from '../nodes/BetterZendesk/resources/view';
 import { BetterZendesk } from '../nodes/BetterZendesk/BetterZendesk.node';
@@ -618,7 +618,7 @@ describe('ticketField resource', () => {
 });
 
 describe('user resource', () => {
-	it('has correct structure with get, getAll, and create operations', () => {
+	it('has correct structure with all operations', () => {
 		expect(userDescription).toBeDefined();
 		expect(Array.isArray(userDescription)).toBe(true);
 
@@ -628,59 +628,182 @@ describe('user resource', () => {
 
 		if (operationProperty && 'options' in operationProperty) {
 			const options = operationProperty.options as Array<{ name: string; value: string }>;
-			expect(options.length).toBeGreaterThanOrEqual(3);
+			expect(options.length).toBeGreaterThanOrEqual(8);
 
 			const getOp = options.find((op) => op.value === 'get');
 			const getAllOp = options.find((op) => op.value === 'getAll');
 			const createOp = options.find((op) => op.value === 'create');
+			const updateOp = options.find((op) => op.value === 'update');
+			const deleteOp = options.find((op) => op.value === 'delete');
+			const searchOp = options.find((op) => op.value === 'search');
+			const getOrganizationsOp = options.find((op) => op.value === 'getOrganizations');
+			const getRelatedDataOp = options.find((op) => op.value === 'getRelatedData');
 
 			expect(getOp).toBeDefined();
 			expect(getAllOp).toBeDefined();
 			expect(createOp).toBeDefined();
+			expect(updateOp).toBeDefined();
+			expect(deleteOp).toBeDefined();
+			expect(searchOp).toBeDefined();
+			expect(getOrganizationsOp).toBeDefined();
+			expect(getRelatedDataOp).toBeDefined();
 		}
 	});
 
-	it('has get operation with correct routing', () => {
+	it('has get operation with correct routing and error hook', () => {
 		const operationProperty = userDescription.find((prop) => prop.name === 'operation');
 		if (operationProperty && 'options' in operationProperty) {
 			const options = operationProperty.options as Array<{
 				value: string;
-				routing?: { request?: { method?: string; url?: string } };
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
 			}>;
 			const getOp = options.find((op) => op.value === 'get');
 			expect(getOp?.routing?.request?.method).toBe('GET');
-			expect(getOp?.routing?.request?.url).toContain('users');
-			expect(getOp?.routing?.request?.url).toContain('userId');
+			expect(getOp?.routing?.request?.url).toBe('=/users/{{$parameter.userId}}.json');
+			expect(getOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(getOp?.routing?.output?.postReceive)).toBe(true);
 		}
 	});
 
-	it('has getAll operation with correct routing', () => {
+	it('has getAll operation with correct routing, pagination, and error hook', () => {
 		const operationProperty = userDescription.find((prop) => prop.name === 'operation');
 		if (operationProperty && 'options' in operationProperty) {
 			const options = operationProperty.options as Array<{
 				value: string;
-				routing?: { request?: { method?: string; url?: string } };
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
 			}>;
 			const getAllOp = options.find((op) => op.value === 'getAll');
 			expect(getAllOp?.routing?.request?.method).toBe('GET');
-			expect(getAllOp?.routing?.request?.url).toBe('/users');
+			expect(getAllOp?.routing?.request?.url).toBe('/users.json');
+			expect(getAllOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(getAllOp?.routing?.output?.postReceive)).toBe(true);
 		}
+
+		const returnAllProp = userDescription.find((prop) => prop.name === 'returnAll');
+		const limitProp = userDescription.find((prop) => prop.name === 'limit');
+		expect(returnAllProp).toBeDefined();
+		expect(limitProp).toBeDefined();
 	});
 
-	it('has create operation with correct routing', () => {
+	it('has create operation with correct routing and error hook', () => {
 		const operationProperty = userDescription.find((prop) => prop.name === 'operation');
 		if (operationProperty && 'options' in operationProperty) {
 			const options = operationProperty.options as Array<{
 				value: string;
-				routing?: { request?: { method?: string; url?: string } };
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
 			}>;
 			const createOp = options.find((op) => op.value === 'create');
 			expect(createOp?.routing?.request?.method).toBe('POST');
-			expect(createOp?.routing?.request?.url).toBe('/users');
+			expect(createOp?.routing?.request?.url).toBe('/users.json');
+			expect(createOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(createOp?.routing?.output?.postReceive)).toBe(true);
 		}
 	});
 
-	it('has userId parameter for get operation', () => {
+	it('has update operation with correct routing and error hook', () => {
+		const operationProperty = userDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
+			}>;
+			const updateOp = options.find((op) => op.value === 'update');
+			expect(updateOp?.routing?.request?.method).toBe('PUT');
+			expect(updateOp?.routing?.request?.url).toBe('=/users/{{$parameter.userId}}.json');
+			expect(updateOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(updateOp?.routing?.output?.postReceive)).toBe(true);
+		}
+	});
+
+	it('has delete operation with correct routing and error hook', () => {
+		const operationProperty = userDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
+			}>;
+			const deleteOp = options.find((op) => op.value === 'delete');
+			expect(deleteOp?.routing?.request?.method).toBe('DELETE');
+			expect(deleteOp?.routing?.request?.url).toBe('=/users/{{$parameter.userId}}.json');
+			expect(deleteOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(deleteOp?.routing?.output?.postReceive)).toBe(true);
+		}
+	});
+
+	it('has search operation with correct routing and error hook', () => {
+		const operationProperty = userDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
+			}>;
+			const searchOp = options.find((op) => op.value === 'search');
+			expect(searchOp?.routing?.request?.method).toBe('GET');
+			expect(searchOp?.routing?.request?.url).toBe('/users/search.json');
+			expect(searchOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(searchOp?.routing?.output?.postReceive)).toBe(true);
+		}
+	});
+
+	it('has getOrganizations operation with correct routing and error hook', () => {
+		const operationProperty = userDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
+			}>;
+			const getOrganizationsOp = options.find((op) => op.value === 'getOrganizations');
+			expect(getOrganizationsOp?.routing?.request?.method).toBe('GET');
+			expect(getOrganizationsOp?.routing?.request?.url).toBe(
+				'=/users/{{$parameter.userId}}/organizations.json',
+			);
+			expect(getOrganizationsOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(getOrganizationsOp?.routing?.output?.postReceive)).toBe(true);
+		}
+	});
+
+	it('has getRelatedData operation with correct routing and error hook', () => {
+		const operationProperty = userDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
+			}>;
+			const getRelatedDataOp = options.find((op) => op.value === 'getRelatedData');
+			expect(getRelatedDataOp?.routing?.request?.method).toBe('GET');
+			expect(getRelatedDataOp?.routing?.request?.url).toBe(
+				'=/users/{{$parameter.userId}}/related.json',
+			);
+			expect(getRelatedDataOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(getRelatedDataOp?.routing?.output?.postReceive)).toBe(true);
+		}
+	});
+
+	it('has userId parameter for get, update, delete, getOrganizations, and getRelatedData operations', () => {
 		const userIdProp = userDescription.find((prop) => prop.name === 'userId');
 		expect(userIdProp).toBeDefined();
 		expect(userIdProp?.type).toBe('string');
@@ -690,49 +813,233 @@ describe('user resource', () => {
 		const nameProp = userDescription.find((prop) => prop.name === 'name');
 		expect(nameProp).toBeDefined();
 		expect(nameProp?.type).toBe('string');
-		expect(nameProp?.required).toBe(true);
+	});
+
+	it('has email parameter for create and update operations', () => {
+		const emailProp = userDescription.find((prop) => prop.name === 'email');
+		expect(emailProp).toBeDefined();
+		expect(emailProp?.type).toBe('string');
+	});
+
+	it('has role parameter for create and update operations', () => {
+		const roleProp = userDescription.find((prop) => prop.name === 'role');
+		expect(roleProp).toBeDefined();
+		expect(roleProp?.type).toBe('options');
+	});
+
+	it('has query parameter for search operation', () => {
+		const queryProp = userDescription.find((prop) => prop.name === 'query');
+		expect(queryProp).toBeDefined();
+		expect(queryProp?.type).toBe('string');
+		expect(queryProp?.required).toBe(true);
+	});
+
+	it('has all operations with postReceive error hook', () => {
+		const operationProperty = userDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: { output?: { postReceive?: unknown[] } };
+			}>;
+			options.forEach((op) => {
+				expect(op.routing?.output?.postReceive).toBeDefined();
+				expect(Array.isArray(op.routing?.output?.postReceive)).toBe(true);
+				expect(op.routing?.output?.postReceive?.length).toBeGreaterThan(0);
+			});
+		}
 	});
 });
 
-describe('company resource', () => {
-	it('has correct structure with getAll operation', () => {
-		expect(companyDescription).toBeDefined();
-		expect(Array.isArray(companyDescription)).toBe(true);
+describe('organization resource', () => {
+	it('has correct structure with all operations', () => {
+		expect(organizationDescription).toBeDefined();
+		expect(Array.isArray(organizationDescription)).toBe(true);
 
-		const operationProperty = companyDescription.find((prop) => prop.name === 'operation');
+		const operationProperty = organizationDescription.find((prop) => prop.name === 'operation');
 		expect(operationProperty).toBeDefined();
 		expect(operationProperty?.type).toBe('options');
 
 		if (operationProperty && 'options' in operationProperty) {
 			const options = operationProperty.options as Array<{ name: string; value: string }>;
-			expect(options.length).toBeGreaterThanOrEqual(1);
+			expect(options.length).toBeGreaterThanOrEqual(7);
 
+			const countOp = options.find((op) => op.value === 'count');
+			const getOp = options.find((op) => op.value === 'get');
 			const getAllOp = options.find((op) => op.value === 'getAll');
+			const createOp = options.find((op) => op.value === 'create');
+			const updateOp = options.find((op) => op.value === 'update');
+			const deleteOp = options.find((op) => op.value === 'delete');
+			const getRelatedDataOp = options.find((op) => op.value === 'getRelatedData');
+
+			expect(countOp).toBeDefined();
+			expect(getOp).toBeDefined();
 			expect(getAllOp).toBeDefined();
+			expect(createOp).toBeDefined();
+			expect(updateOp).toBeDefined();
+			expect(deleteOp).toBeDefined();
+			expect(getRelatedDataOp).toBeDefined();
 		}
 	});
 
-	it('has getAll operation with correct routing', () => {
-		const operationProperty = companyDescription.find((prop) => prop.name === 'operation');
+	it('has count operation with correct routing and error hook', () => {
+		const operationProperty = organizationDescription.find((prop) => prop.name === 'operation');
 		if (operationProperty && 'options' in operationProperty) {
 			const options = operationProperty.options as Array<{
 				value: string;
-				routing?: { request?: { method?: string; url?: string } };
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
 			}>;
-			const getAllOp = options.find((op) => op.value === 'getAll');
-			expect(getAllOp?.routing?.request?.method).toBe('GET');
-			expect(getAllOp?.routing?.request?.url).toBe('/companies');
+			const countOp = options.find((op) => op.value === 'count');
+			expect(countOp?.routing?.request?.method).toBe('GET');
+			expect(countOp?.routing?.request?.url).toBe('/organizations/count.json');
+			expect(countOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(countOp?.routing?.output?.postReceive)).toBe(true);
 		}
 	});
 
-	it('has pagination parameters for getAll operation', () => {
-		const returnAllProp = companyDescription.find((prop) => prop.name === 'returnAll');
-		const limitProp = companyDescription.find((prop) => prop.name === 'limit');
+	it('has get operation with correct routing and error hook', () => {
+		const operationProperty = organizationDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
+			}>;
+			const getOp = options.find((op) => op.value === 'get');
+			expect(getOp?.routing?.request?.method).toBe('GET');
+			expect(getOp?.routing?.request?.url).toBe('=/organizations/{{$parameter.organizationId}}.json');
+			expect(getOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(getOp?.routing?.output?.postReceive)).toBe(true);
+		}
+	});
 
+	it('has getAll operation with correct routing, pagination, and error hook', () => {
+		const operationProperty = organizationDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
+			}>;
+			const getAllOp = options.find((op) => op.value === 'getAll');
+			expect(getAllOp?.routing?.request?.method).toBe('GET');
+			expect(getAllOp?.routing?.request?.url).toBe('/organizations.json');
+			expect(getAllOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(getAllOp?.routing?.output?.postReceive)).toBe(true);
+		}
+
+		const returnAllProp = organizationDescription.find((prop) => prop.name === 'returnAll');
+		const limitProp = organizationDescription.find((prop) => prop.name === 'limit');
 		expect(returnAllProp).toBeDefined();
 		expect(limitProp).toBeDefined();
-		expect(returnAllProp?.type).toBe('boolean');
-		expect(limitProp?.type).toBe('number');
+	});
+
+	it('has create operation with correct routing and error hook', () => {
+		const operationProperty = organizationDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
+			}>;
+			const createOp = options.find((op) => op.value === 'create');
+			expect(createOp?.routing?.request?.method).toBe('POST');
+			expect(createOp?.routing?.request?.url).toBe('/organizations.json');
+			expect(createOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(createOp?.routing?.output?.postReceive)).toBe(true);
+		}
+	});
+
+	it('has update operation with correct routing and error hook', () => {
+		const operationProperty = organizationDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
+			}>;
+			const updateOp = options.find((op) => op.value === 'update');
+			expect(updateOp?.routing?.request?.method).toBe('PUT');
+			expect(updateOp?.routing?.request?.url).toBe('=/organizations/{{$parameter.organizationId}}.json');
+			expect(updateOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(updateOp?.routing?.output?.postReceive)).toBe(true);
+		}
+	});
+
+	it('has delete operation with correct routing and error hook', () => {
+		const operationProperty = organizationDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
+			}>;
+			const deleteOp = options.find((op) => op.value === 'delete');
+			expect(deleteOp?.routing?.request?.method).toBe('DELETE');
+			expect(deleteOp?.routing?.request?.url).toBe('=/organizations/{{$parameter.organizationId}}.json');
+			expect(deleteOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(deleteOp?.routing?.output?.postReceive)).toBe(true);
+		}
+	});
+
+	it('has getRelatedData operation with correct routing and error hook', () => {
+		const operationProperty = organizationDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: {
+					request?: { method?: string; url?: string };
+					output?: { postReceive?: unknown[] };
+				};
+			}>;
+			const getRelatedDataOp = options.find((op) => op.value === 'getRelatedData');
+			expect(getRelatedDataOp?.routing?.request?.method).toBe('GET');
+			expect(getRelatedDataOp?.routing?.request?.url).toBe(
+				'=/organizations/{{$parameter.organizationId}}/related.json',
+			);
+			expect(getRelatedDataOp?.routing?.output?.postReceive).toBeDefined();
+			expect(Array.isArray(getRelatedDataOp?.routing?.output?.postReceive)).toBe(true);
+		}
+	});
+
+	it('has organizationId parameter for get, update, delete, and getRelatedData operations', () => {
+		const organizationIdProp = organizationDescription.find((prop) => prop.name === 'organizationId');
+		expect(organizationIdProp).toBeDefined();
+		expect(organizationIdProp?.type).toBe('string');
+		expect(organizationIdProp?.required).toBe(true);
+	});
+
+	it('has name parameter for create and update operations', () => {
+		const nameProp = organizationDescription.find((prop) => prop.name === 'name');
+		expect(nameProp).toBeDefined();
+		expect(nameProp?.type).toBe('string');
+	});
+
+	it('has all operations with postReceive error hook', () => {
+		const operationProperty = organizationDescription.find((prop) => prop.name === 'operation');
+		if (operationProperty && 'options' in operationProperty) {
+			const options = operationProperty.options as Array<{
+				value: string;
+				routing?: { output?: { postReceive?: unknown[] } };
+			}>;
+			options.forEach((op) => {
+				expect(op.routing?.output?.postReceive).toBeDefined();
+				expect(Array.isArray(op.routing?.output?.postReceive)).toBe(true);
+				expect(op.routing?.output?.postReceive?.length).toBeGreaterThan(0);
+			});
+		}
 	});
 });
 
@@ -948,7 +1255,7 @@ describe('BetterZendesk node', () => {
 			const resourceValues = options.map((opt) => opt.value);
 
 			expect(resourceValues).toContain('user');
-			expect(resourceValues).toContain('company');
+			expect(resourceValues).toContain('organization');
 			expect(resourceValues).toContain('ticket');
 			expect(resourceValues).toContain('ticketField');
 			expect(resourceValues).toContain('view');
@@ -960,8 +1267,8 @@ describe('BetterZendesk node', () => {
 		const hasUserProps = node.description.properties.some(
 			(prop) => prop.displayOptions?.show?.resource?.includes('user'),
 		);
-		const hasCompanyProps = node.description.properties.some(
-			(prop) => prop.displayOptions?.show?.resource?.includes('company'),
+		const hasOrganizationProps = node.description.properties.some(
+			(prop) => prop.displayOptions?.show?.resource?.includes('organization'),
 		);
 		const hasTicketProps = node.description.properties.some(
 			(prop) => prop.displayOptions?.show?.resource?.includes('ticket'),
@@ -974,7 +1281,7 @@ describe('BetterZendesk node', () => {
 		);
 
 		expect(hasUserProps).toBe(true);
-		expect(hasCompanyProps).toBe(true);
+		expect(hasOrganizationProps).toBe(true);
 		expect(hasTicketProps).toBe(true);
 		expect(hasTicketFieldProps).toBe(true);
 		expect(hasViewProps).toBe(true);
