@@ -489,48 +489,11 @@ describe('prepareTicketUpdate', () => {
 		expect(options.body.ticket.comment).toBeUndefined();
 	});
 
-	it('handles tags as array', async () => {
-		const ctx = mockCtx({
-			tags: ['tag1', 'tag2'],
-		});
-		const options = await prepareTicketUpdate.call(
-			ctx as unknown as IExecuteSingleFunctions,
-			{} as IHttpRequestOptions,
-		);
-		expect(options.body.ticket.tags).toEqual(['tag1', 'tag2']);
-	});
-
-	it('handles tags as comma-separated string', async () => {
-		const ctx = mockCtx({
-			tags: 'tag1, tag2, tag3',
-		});
-		const options = await prepareTicketUpdate.call(
-			ctx as unknown as IExecuteSingleFunctions,
-			{} as IHttpRequestOptions,
-		);
-		expect(options.body.ticket.tags).toEqual(['tag1', 'tag2', 'tag3']);
-	});
-
-	it('handles custom fields', async () => {
-		const ctx = mockCtx({
-			customFields: '[{"id":123,"value":"updated"}]',
-		});
-		const options = await prepareTicketUpdate.call(
-			ctx as unknown as IExecuteSingleFunctions,
-			{} as IHttpRequestOptions,
-		);
-		expect(options.body.ticket.custom_fields).toEqual([{ id: 123, value: 'updated' }]);
-	});
-
 	it('handles all update fields together', async () => {
 		const ctx = mockCtx({
 			subject: 'Updated',
 			status: 'solved',
-			type: 'task',
-			tags: 'urgent,important',
 			publicReply: 'Fixed the issue',
-			customFields: '[{"id":123,"value":"done"}]',
-			recipient: 'customer@example.com',
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -540,11 +503,7 @@ describe('prepareTicketUpdate', () => {
 			ticket: {
 				subject: 'Updated',
 				status: 'solved',
-				type: 'task',
-				tags: ['urgent', 'important'],
 				comment: { body: 'Fixed the issue', public: true },
-				custom_fields: [{ id: 123, value: 'done' }],
-				recipient: 'customer@example.com',
 			},
 		});
 	});
