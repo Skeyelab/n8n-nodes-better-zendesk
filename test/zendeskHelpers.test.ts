@@ -293,13 +293,18 @@ describe('zendeskPostReceive', () => {
 describe('prepareTicketCreate', () => {
 	it('builds ticket body with required and optional fields', async () => {
 		const ctx = mockCtx({
-			subject: 'Test',
 			description: 'Hello',
-			status: 'new',
-			type: 'question',
-			tags: 'a,b',
-			customFields: '[{"id":123,"value":"foo"}]',
-			recipient: 'to@example.com',
+			jsonParameters: false,
+			additionalFields: {
+				subject: 'Test',
+				status: 'new',
+				type: 'question',
+				tags: ['a', 'b'],
+				customFieldsUi: {
+					customFieldsValues: [{ id: 123, value: 'foo' }],
+				},
+				recipient: 'to@example.com',
+			},
 		});
 		const options = await prepareTicketCreate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -321,6 +326,8 @@ describe('prepareTicketCreate', () => {
 	it('handles minimal required fields (description only)', async () => {
 		const ctx = mockCtx({
 			description: 'Minimal ticket',
+			jsonParameters: false,
+			additionalFields: {},
 		});
 		const options = await prepareTicketCreate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -336,7 +343,10 @@ describe('prepareTicketCreate', () => {
 	it('handles tags as array', async () => {
 		const ctx = mockCtx({
 			description: 'Test',
-			tags: ['tag1', 'tag2', 'tag3'],
+			jsonParameters: false,
+			additionalFields: {
+				tags: ['tag1', 'tag2', 'tag3'],
+			},
 		});
 		const options = await prepareTicketCreate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -348,7 +358,10 @@ describe('prepareTicketCreate', () => {
 	it('handles tags as comma-separated string', async () => {
 		const ctx = mockCtx({
 			description: 'Test',
-			tags: 'tag1, tag2, tag3',
+			jsonParameters: false,
+			additionalFields: {
+				tags: 'tag1, tag2, tag3',
+			},
 		});
 		const options = await prepareTicketCreate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -360,7 +373,10 @@ describe('prepareTicketCreate', () => {
 	it('filters out empty tags', async () => {
 		const ctx = mockCtx({
 			description: 'Test',
-			tags: 'tag1, , tag2,  , tag3',
+			jsonParameters: false,
+			additionalFields: {
+				tags: 'tag1, , tag2,  , tag3',
+			},
 		});
 		const options = await prepareTicketCreate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -369,22 +385,13 @@ describe('prepareTicketCreate', () => {
 		expect(options.body.ticket.tags).toEqual(['tag1', 'tag2', 'tag3']);
 	});
 
-	it('handles invalid JSON in customFields gracefully', async () => {
+	it('handles empty customFieldsUi gracefully', async () => {
 		const ctx = mockCtx({
 			description: 'Test',
-			customFields: 'invalid json',
-		});
-		const options = await prepareTicketCreate.call(
-			ctx as unknown as IExecuteSingleFunctions,
-			{} as IHttpRequestOptions,
-		);
-		expect(options.body.ticket.custom_fields).toBeUndefined();
-	});
-
-	it('handles empty customFields', async () => {
-		const ctx = mockCtx({
-			description: 'Test',
-			customFields: '',
+			jsonParameters: false,
+			additionalFields: {
+				customFieldsUi: {},
+			},
 		});
 		const options = await prepareTicketCreate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -396,7 +403,15 @@ describe('prepareTicketCreate', () => {
 	it('handles multiple custom fields', async () => {
 		const ctx = mockCtx({
 			description: 'Test',
-			customFields: '[{"id":123,"value":"foo"},{"id":456,"value":"bar"}]',
+			jsonParameters: false,
+			additionalFields: {
+				customFieldsUi: {
+					customFieldsValues: [
+						{ id: 123, value: 'foo' },
+						{ id: 456, value: 'bar' },
+					],
+				},
+			},
 		});
 		const options = await prepareTicketCreate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -411,6 +426,8 @@ describe('prepareTicketCreate', () => {
 	it('omits undefined optional fields', async () => {
 		const ctx = mockCtx({
 			description: 'Test',
+			jsonParameters: false,
+			additionalFields: {},
 		});
 		const options = await prepareTicketCreate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -426,7 +443,10 @@ describe('prepareTicketCreate', () => {
 	it('handles externalId field', async () => {
 		const ctx = mockCtx({
 			description: 'Test',
-			externalId: 'external-123',
+			jsonParameters: false,
+			additionalFields: {
+				externalId: 'external-123',
+			},
 		});
 		const options = await prepareTicketCreate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -438,7 +458,10 @@ describe('prepareTicketCreate', () => {
 	it('handles group field', async () => {
 		const ctx = mockCtx({
 			description: 'Test',
-			group: '12345',
+			jsonParameters: false,
+			additionalFields: {
+				group: '12345',
+			},
 		});
 		const options = await prepareTicketCreate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -450,7 +473,10 @@ describe('prepareTicketCreate', () => {
 	it('handles group field as number', async () => {
 		const ctx = mockCtx({
 			description: 'Test',
-			group: 67890,
+			jsonParameters: false,
+			additionalFields: {
+				group: 67890,
+			},
 		});
 		const options = await prepareTicketCreate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -458,13 +484,31 @@ describe('prepareTicketCreate', () => {
 		);
 		expect(options.body.ticket.group_id).toBe(67890);
 	});
+
+	it('handles JSON parameters mode', async () => {
+		const ctx = mockCtx({
+			description: 'Test',
+			jsonParameters: true,
+			additionalFieldsJson: '{"subject":"From JSON","status":"open"}',
+		});
+		const options = await prepareTicketCreate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.subject).toBe('From JSON');
+		expect(options.body.ticket.status).toBe('open');
+		expect(options.body.ticket.comment).toEqual({ body: 'Test', public: true });
+	});
 });
 
 describe('prepareTicketUpdate', () => {
 	it('prefers public reply over internal note when both provided', async () => {
 		const ctx = mockCtx({
-			internalNote: 'internal',
-			publicReply: 'public',
+			jsonParameters: false,
+			updateFields: {
+				internalNote: 'internal',
+				publicReply: 'public',
+			},
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -479,7 +523,10 @@ describe('prepareTicketUpdate', () => {
 
 	it('handles internal note only', async () => {
 		const ctx = mockCtx({
-			internalNote: 'internal note',
+			jsonParameters: false,
+			updateFields: {
+				internalNote: 'internal note',
+			},
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -494,7 +541,10 @@ describe('prepareTicketUpdate', () => {
 
 	it('handles public reply only', async () => {
 		const ctx = mockCtx({
-			publicReply: 'public reply',
+			jsonParameters: false,
+			updateFields: {
+				publicReply: 'public reply',
+			},
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -509,8 +559,11 @@ describe('prepareTicketUpdate', () => {
 
 	it('handles update without comment', async () => {
 		const ctx = mockCtx({
-			subject: 'Updated subject',
-			status: 'solved',
+			jsonParameters: false,
+			updateFields: {
+				subject: 'Updated subject',
+				status: 'solved',
+			},
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -527,9 +580,12 @@ describe('prepareTicketUpdate', () => {
 
 	it('handles all update fields together', async () => {
 		const ctx = mockCtx({
-			subject: 'Updated',
-			status: 'solved',
-			publicReply: 'Fixed the issue',
+			jsonParameters: false,
+			updateFields: {
+				subject: 'Updated',
+				status: 'solved',
+				publicReply: 'Fixed the issue',
+			},
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -544,31 +600,26 @@ describe('prepareTicketUpdate', () => {
 		});
 	});
 
-	it('handles assigneeEmail field (numeric ID)', async () => {
+	it('handles assigneeEmail field', async () => {
 		const ctx = mockCtx({
-			assigneeEmail: '12345',
+			jsonParameters: false,
+			updateFields: {
+				assigneeEmail: 'agent@example.com',
+			},
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
 			{} as IHttpRequestOptions,
 		);
-		expect(options.body.ticket.assignee_id).toBe(12345);
-	});
-
-	it('handles assigneeEmail field with numeric string', async () => {
-		const ctx = mockCtx({
-			assigneeEmail: '67890',
-		});
-		const options = await prepareTicketUpdate.call(
-			ctx as unknown as IExecuteSingleFunctions,
-			{} as IHttpRequestOptions,
-		);
-		expect(options.body.ticket.assignee_id).toBe(67890);
+		expect(options.body.ticket.assignee_email).toBe('agent@example.com');
 	});
 
 	it('handles externalId field', async () => {
 		const ctx = mockCtx({
-			externalId: 'external-456',
+			jsonParameters: false,
+			updateFields: {
+				externalId: 'external-456',
+			},
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -579,7 +630,10 @@ describe('prepareTicketUpdate', () => {
 
 	it('handles group field', async () => {
 		const ctx = mockCtx({
-			group: '12345',
+			jsonParameters: false,
+			updateFields: {
+				group: '12345',
+			},
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -590,7 +644,10 @@ describe('prepareTicketUpdate', () => {
 
 	it('handles type field', async () => {
 		const ctx = mockCtx({
-			type: 'incident',
+			jsonParameters: false,
+			updateFields: {
+				type: 'incident',
+			},
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -601,7 +658,10 @@ describe('prepareTicketUpdate', () => {
 
 	it('handles tags field', async () => {
 		const ctx = mockCtx({
-			tags: 'tag1,tag2',
+			jsonParameters: false,
+			updateFields: {
+				tags: ['tag1', 'tag2'],
+			},
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
@@ -610,25 +670,77 @@ describe('prepareTicketUpdate', () => {
 		expect(options.body.ticket.tags).toEqual(['tag1', 'tag2']);
 	});
 
-	it('handles all new update fields together', async () => {
+	it('handles all update fields together', async () => {
 		const ctx = mockCtx({
-			subject: 'Updated',
-			status: 'solved',
-			assigneeEmail: '123',
-			externalId: 'ext-123',
-			group: '456',
-			type: 'task',
-			tags: 'urgent,priority',
+			jsonParameters: false,
+			updateFields: {
+				subject: 'Updated',
+				status: 'solved',
+				assigneeEmail: 'agent@example.com',
+				externalId: 'ext-123',
+				group: '456',
+				type: 'task',
+				tags: ['urgent', 'priority'],
+			},
 		});
 		const options = await prepareTicketUpdate.call(
 			ctx as unknown as IExecuteSingleFunctions,
 			{} as IHttpRequestOptions,
 		);
-		expect(options.body.ticket.assignee_id).toBe(123);
+		expect(options.body.ticket.assignee_email).toBe('agent@example.com');
 		expect(options.body.ticket.external_id).toBe('ext-123');
 		expect(options.body.ticket.group_id).toBe(456);
 		expect(options.body.ticket.type).toBe('task');
 		expect(options.body.ticket.tags).toEqual(['urgent', 'priority']);
+	});
+
+	it('handles custom fields in update', async () => {
+		const ctx = mockCtx({
+			jsonParameters: false,
+			updateFields: {
+				customFieldsUi: {
+					customFieldsValues: [
+						{ id: 123, value: 'foo' },
+						{ id: 456, value: 'bar' },
+					],
+				},
+			},
+		});
+		const options = await prepareTicketUpdate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.custom_fields).toEqual([
+			{ id: 123, value: 'foo' },
+			{ id: 456, value: 'bar' },
+		]);
+	});
+
+	it('handles JSON parameters mode', async () => {
+		const ctx = mockCtx({
+			jsonParameters: true,
+			updateFieldsJson: '{"subject":"From JSON","status":"open"}',
+		});
+		const options = await prepareTicketUpdate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.subject).toBe('From JSON');
+		expect(options.body.ticket.status).toBe('open');
+	});
+
+	it('handles recipient field', async () => {
+		const ctx = mockCtx({
+			jsonParameters: false,
+			updateFields: {
+				recipient: 'user@example.com',
+			},
+		});
+		const options = await prepareTicketUpdate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.recipient).toBe('user@example.com');
 	});
 });
 
