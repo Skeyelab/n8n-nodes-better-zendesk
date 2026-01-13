@@ -1,4 +1,11 @@
-import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from 'n8n-workflow';
+import {
+	NodeConnectionTypes,
+	type IDataObject,
+	type ILoadOptionsFunctions,
+	type INodePropertyOptions,
+	type INodeType,
+	type INodeTypeDescription,
+} from 'n8n-workflow';
 import { userDescription } from './resources/user';
 import { organizationDescription } from './resources/organization';
 import { ticketDescription } from './resources/ticket';
@@ -67,5 +74,200 @@ export class BetterZendesk implements INodeType {
 			...ticketFieldDescription,
 			...viewDescription,
 		],
+	};
+
+	methods = {
+		loadOptions: {
+			// Get custom ticket fields
+			async getCustomFields(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('betterZendeskApi');
+				const subdomain = credentials.subdomain as string;
+				const requestOptions = {
+					method: 'GET',
+					url: `https://${subdomain}.zendesk.com/api/v2/ticket_fields.json`,
+					json: true,
+				};
+
+				try {
+					const response = await this.helpers.httpRequest(requestOptions);
+					const ticketFields = response.ticket_fields;
+
+					if (!Array.isArray(ticketFields)) {
+						return [];
+					}
+
+					return ticketFields
+						.filter((field: IDataObject) => field.type === 'custom')
+						.map((field: IDataObject) => ({
+							name: field.title as string,
+							value: field.id as number,
+						}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			// Get groups
+			async getGroups(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('betterZendeskApi');
+				const subdomain = credentials.subdomain as string;
+				const requestOptions = {
+					method: 'GET',
+					url: `https://${subdomain}.zendesk.com/api/v2/groups.json`,
+					json: true,
+				};
+
+				try {
+					const response = await this.helpers.httpRequest(requestOptions);
+					const groups = response.groups;
+
+					if (!Array.isArray(groups)) {
+						return [];
+					}
+
+					return groups.map((group: IDataObject) => ({
+						name: group.name as string,
+						value: group.id as number,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			// Get tags
+			async getTags(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('betterZendeskApi');
+				const subdomain = credentials.subdomain as string;
+				const requestOptions = {
+					method: 'GET',
+					url: `https://${subdomain}.zendesk.com/api/v2/autocomplete/tags.json`,
+					json: true,
+				};
+
+				try {
+					const response = await this.helpers.httpRequest(requestOptions);
+					const tags = response.tags;
+
+					if (!Array.isArray(tags)) {
+						return [];
+					}
+
+					return tags.map((tag: IDataObject) => ({
+						name: tag.name as string,
+						value: tag.name as string,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			// Get locales
+			async getLocales(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('betterZendeskApi');
+				const subdomain = credentials.subdomain as string;
+				const requestOptions = {
+					method: 'GET',
+					url: `https://${subdomain}.zendesk.com/api/v2/locales.json`,
+					json: true,
+				};
+
+				try {
+					const response = await this.helpers.httpRequest(requestOptions);
+					const locales = response.locales;
+
+					if (!Array.isArray(locales)) {
+						return [];
+					}
+
+					return locales.map((locale: IDataObject) => ({
+						name: locale.name as string,
+						value: locale.id as number,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			// Get user custom fields
+			async getUserFields(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('betterZendeskApi');
+				const subdomain = credentials.subdomain as string;
+				const requestOptions = {
+					method: 'GET',
+					url: `https://${subdomain}.zendesk.com/api/v2/user_fields.json`,
+					json: true,
+				};
+
+				try {
+					const response = await this.helpers.httpRequest(requestOptions);
+					const userFields = response.user_fields;
+
+					if (!Array.isArray(userFields)) {
+						return [];
+					}
+
+					return userFields.map((field: IDataObject) => ({
+						name: field.title as string,
+						value: field.id as number,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			// Get organization custom fields
+			async getOrganizationFields(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('betterZendeskApi');
+				const subdomain = credentials.subdomain as string;
+				const requestOptions = {
+					method: 'GET',
+					url: `https://${subdomain}.zendesk.com/api/v2/organization_fields.json`,
+					json: true,
+				};
+
+				try {
+					const response = await this.helpers.httpRequest(requestOptions);
+					const organizationFields = response.organization_fields;
+
+					if (!Array.isArray(organizationFields)) {
+						return [];
+					}
+
+					return organizationFields.map((field: IDataObject) => ({
+						name: field.title as string,
+						value: field.id as number,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+
+			// Get organizations
+			async getOrganizations(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('betterZendeskApi');
+				const subdomain = credentials.subdomain as string;
+				const requestOptions = {
+					method: 'GET',
+					url: `https://${subdomain}.zendesk.com/api/v2/organizations.json`,
+					json: true,
+				};
+
+				try {
+					const response = await this.helpers.httpRequest(requestOptions);
+					const organizations = response.organizations;
+
+					if (!Array.isArray(organizations)) {
+						return [];
+					}
+
+					return organizations.map((organization: IDataObject) => ({
+						name: organization.name as string,
+						value: organization.id as number,
+					}));
+				} catch (error) {
+					return [];
+				}
+			},
+		},
 	};
 }
