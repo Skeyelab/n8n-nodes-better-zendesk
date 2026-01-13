@@ -182,6 +182,80 @@ export const ticketDescription: INodeProperties[] = [
 		description: 'Adds an internal note as the latest comment',
 	},
 	{
+		displayName: 'Assignee Email',
+		name: 'assigneeEmail',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['ticket'],
+				operation: ['update'],
+			},
+		},
+		description: 'The e-mail address of the assignee',
+		placeholder: 'agent@example.com',
+	},
+	{
+		displayName: 'External ID',
+		name: 'externalId',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['ticket'],
+				operation: ['update'],
+			},
+		},
+		description: 'An ID you can use to link Zendesk Support tickets to local records',
+	},
+	{
+		displayName: 'Group Name or ID',
+		name: 'group',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['ticket'],
+				operation: ['update'],
+			},
+		},
+		description:
+			'The group this ticket is assigned to. Specify a group ID (numeric) or name using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+		placeholder: '12345',
+	},
+	{
+		displayName: 'Type',
+		name: 'type',
+		type: 'options',
+		options: [
+			{ name: 'Question', value: 'question' },
+			{ name: 'Incident', value: 'incident' },
+			{ name: 'Problem', value: 'problem' },
+			{ name: 'Task', value: 'task' },
+		],
+		default: 'question',
+		displayOptions: {
+			show: {
+				resource: ['ticket'],
+				operation: ['update'],
+			},
+		},
+		description: 'The type of this ticket',
+	},
+	{
+		displayName: 'Tags',
+		name: 'tags',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['ticket'],
+				operation: ['update'],
+			},
+		},
+		description: 'Comma-separated tags to set on the ticket',
+	},
+	{
 		displayName: 'Status',
 		name: 'status',
 		type: 'options',
@@ -262,6 +336,34 @@ export const ticketDescription: INodeProperties[] = [
 			},
 		},
 		description: 'Array of custom field IDs and values (use your Zendesk custom field IDs)',
+	},
+	{
+		displayName: 'External ID',
+		name: 'externalId',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['ticket'],
+				operation: ['create'],
+			},
+		},
+		description: 'An ID you can use to link Zendesk Support tickets to local records',
+	},
+	{
+		displayName: 'Group Name or ID',
+		name: 'group',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				resource: ['ticket'],
+				operation: ['create'],
+			},
+		},
+		description:
+			'The group this ticket is assigned to. Specify a group ID (numeric) or name using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+		placeholder: '12345',
 	},
 	{
 		displayName: 'Return All',
