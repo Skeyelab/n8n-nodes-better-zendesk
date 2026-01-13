@@ -1,3 +1,8 @@
+## 1.1.0 (2026-01-13)
+
+* Merge pull request #21 from Skeyelab/update-ticket-ui-match-upstream ([56b99fb](https://github.com/Skeyelab/n8n-nodes-better-zendesk/commit/56b99fb)), closes [#21](https://github.com/Skeyelab/n8n-nodes-better-zendesk/issues/21)
+* feat: match update ticket UI exactly to upstream n8n Zendesk node ([14eabef](https://github.com/Skeyelab/n8n-nodes-better-zendesk/commit/14eabef))
+
 ## <small>1.0.1 (2026-01-13)</small>
 
 * Merge pull request #20 from Skeyelab/fix/remove-prepublishonly ([65a4a79](https://github.com/Skeyelab/n8n-nodes-better-zendesk/commit/65a4a79)), closes [#20](https://github.com/Skeyelab/n8n-nodes-better-zendesk/issues/20)
