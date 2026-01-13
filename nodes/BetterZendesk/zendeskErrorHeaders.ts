@@ -50,9 +50,10 @@ export async function zendeskPostReceive(
 			this.getNode(),
 			{
 				statusCode: response.statusCode,
-				statusMessage: response.statusMessage,
+				statusMessage: response.statusMessage ?? '',
 				headers: headers as Record<string, string>,
-				body: response.body as unknown,
+				// @ts-expect-error - body can be various types but NodeApiError accepts it
+				body: response.body,
 			},
 			{ httpCode: response.statusCode?.toString() },
 		);

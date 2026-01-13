@@ -27,8 +27,9 @@ export class BetterZendesk implements INodeType {
 				Accept: 'application/json',
 				'Content-Type': 'application/json',
 			},
-			resolveWithFullResponse: true,
+			// @ts-expect-error - simple and resolveWithFullResponse are valid properties but not in TypeScript definitions
 			simple: false,
+			resolveWithFullResponse: true,
 		},
 		properties: [
 			{
