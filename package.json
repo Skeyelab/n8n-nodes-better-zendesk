@@ -23,8 +23,7 @@
     "lint:fix": "n8n-node lint --fix",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "release": "n8n-node release",
-    "prepublishOnly": "n8n-node prerelease"
+    "release": "n8n-node release"
   },
   "files": [
     "dist"
