@@ -216,7 +216,7 @@ export const ticketDescription: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['ticket'],
-				operation: ['create', 'update'],
+				operation: ['create'],
 			},
 		},
 		description: 'Type of ticket',
@@ -229,7 +229,7 @@ export const ticketDescription: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['ticket'],
-				operation: ['create', 'update'],
+				operation: ['create'],
 			},
 		},
 		description: 'Comma-separated tags to set on the ticket',
@@ -242,7 +242,7 @@ export const ticketDescription: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['ticket'],
-				operation: ['create', 'update'],
+				operation: ['create'],
 			},
 		},
 		description: 'Original recipient email address of the ticket',
@@ -258,7 +258,7 @@ export const ticketDescription: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['ticket'],
-				operation: ['create', 'update'],
+				operation: ['create'],
 			},
 		},
 		description: 'Array of custom field IDs and values (use your Zendesk custom field IDs)',

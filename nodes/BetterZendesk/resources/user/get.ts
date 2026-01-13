@@ -1,7 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 const showOnlyForUserGet = {
-	operation: ['get'],
+	operation: ['get', 'update', 'delete', 'getOrganizations', 'getRelatedData'],
 	resource: ['user'],
 };
 
@@ -11,7 +11,8 @@ export const userGetDescription: INodeProperties[] = [
 		name: 'userId',
 		type: 'string',
 		displayOptions: { show: showOnlyForUserGet },
+		required: true,
 		default: '',
-		description: "The user's ID to retrieve",
+		description: "The user's ID",
 	},
 ];

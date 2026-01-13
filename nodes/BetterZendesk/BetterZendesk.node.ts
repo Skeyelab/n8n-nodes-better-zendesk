@@ -1,6 +1,6 @@
 import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from 'n8n-workflow';
 import { userDescription } from './resources/user';
-import { companyDescription } from './resources/company';
+import { organizationDescription } from './resources/organization';
 import { ticketDescription } from './resources/ticket';
 import { viewDescription } from './resources/view';
 import { ticketFieldDescription } from './resources/ticketField';
@@ -39,8 +39,8 @@ export class BetterZendesk implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'Company',
-						value: 'company',
+						name: 'Organization',
+						value: 'organization',
 					},
 					{
 						name: 'Ticket',
@@ -62,7 +62,7 @@ export class BetterZendesk implements INodeType {
 				default: 'user',
 			},
 			...userDescription,
-			...companyDescription,
+			...organizationDescription,
 			...ticketDescription,
 			...ticketFieldDescription,
 			...viewDescription,

@@ -1,19 +1,27 @@
 import type { INodeProperties } from 'n8n-workflow';
 
-const showOnlyForUserCreate = {
-	operation: ['create'],
+const showOnlyForUserUpdate = {
+	operation: ['update'],
 	resource: ['user'],
 };
 
-export const userCreateDescription: INodeProperties[] = [
+export const userUpdateDescription: INodeProperties[] = [
+	{
+		displayName: 'User ID',
+		name: 'userId',
+		type: 'string',
+		displayOptions: { show: showOnlyForUserUpdate },
+		required: true,
+		default: '',
+		description: "The user's ID to update",
+	},
 	{
 		displayName: 'Name',
 		name: 'name',
 		type: 'string',
 		default: '',
-		required: true,
 		displayOptions: {
-			show: showOnlyForUserCreate,
+			show: showOnlyForUserUpdate,
 		},
 		description: 'The name of the user',
 		routing: {
@@ -30,7 +38,7 @@ export const userCreateDescription: INodeProperties[] = [
 		placeholder: 'name@email.com',
 		default: '',
 		displayOptions: {
-			show: showOnlyForUserCreate,
+			show: showOnlyForUserUpdate,
 		},
 		description: 'The email address of the user',
 		routing: {
@@ -51,7 +59,7 @@ export const userCreateDescription: INodeProperties[] = [
 		],
 		default: 'end-user',
 		displayOptions: {
-			show: showOnlyForUserCreate,
+			show: showOnlyForUserUpdate,
 		},
 		description: 'The role of the user',
 		routing: {
@@ -67,7 +75,7 @@ export const userCreateDescription: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		displayOptions: {
-			show: showOnlyForUserCreate,
+			show: showOnlyForUserUpdate,
 		},
 		description: 'The phone number of the user',
 		routing: {
@@ -83,7 +91,7 @@ export const userCreateDescription: INodeProperties[] = [
 		type: 'boolean',
 		default: false,
 		displayOptions: {
-			show: showOnlyForUserCreate,
+			show: showOnlyForUserUpdate,
 		},
 		description: 'Whether the user is verified',
 		routing: {
@@ -99,7 +107,7 @@ export const userCreateDescription: INodeProperties[] = [
 		type: 'boolean',
 		default: true,
 		displayOptions: {
-			show: showOnlyForUserCreate,
+			show: showOnlyForUserUpdate,
 		},
 		description: 'Whether the user is active',
 		routing: {
