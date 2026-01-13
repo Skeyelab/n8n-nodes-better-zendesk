@@ -102,7 +102,7 @@ export class BetterZendesk implements INodeType {
 							name: field.title as string,
 							value: field.id as number,
 						}));
-				} catch (error) {
+				} catch {
 					return [];
 				}
 			},
@@ -129,7 +129,7 @@ export class BetterZendesk implements INodeType {
 						name: group.name as string,
 						value: group.id as number,
 					}));
-				} catch (error) {
+				} catch {
 					return [];
 				}
 			},
@@ -156,7 +156,7 @@ export class BetterZendesk implements INodeType {
 						name: tag.name as string,
 						value: tag.name as string,
 					}));
-				} catch (error) {
+				} catch {
 					return [];
 				}
 			},
@@ -183,7 +183,7 @@ export class BetterZendesk implements INodeType {
 						name: locale.name as string,
 						value: locale.id as number,
 					}));
-				} catch (error) {
+				} catch {
 					return [];
 				}
 			},
@@ -210,7 +210,7 @@ export class BetterZendesk implements INodeType {
 						name: field.title as string,
 						value: field.id as number,
 					}));
-				} catch (error) {
+				} catch {
 					return [];
 				}
 			},
@@ -237,7 +237,7 @@ export class BetterZendesk implements INodeType {
 						name: field.title as string,
 						value: field.id as number,
 					}));
-				} catch (error) {
+				} catch {
 					return [];
 				}
 			},
@@ -264,7 +264,7 @@ export class BetterZendesk implements INodeType {
 						name: organization.name as string,
 						value: organization.id as number,
 					}));
-				} catch (error) {
+				} catch {
 					return [];
 				}
 			},
