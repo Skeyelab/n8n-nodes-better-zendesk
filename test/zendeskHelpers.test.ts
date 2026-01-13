@@ -422,6 +422,42 @@ describe('prepareTicketCreate', () => {
 		expect(options.body.ticket.tags).toBeUndefined();
 		expect(options.body.ticket.recipient).toBeUndefined();
 	});
+
+	it('handles externalId field', async () => {
+		const ctx = mockCtx({
+			description: 'Test',
+			externalId: 'external-123',
+		});
+		const options = await prepareTicketCreate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.external_id).toBe('external-123');
+	});
+
+	it('handles group field', async () => {
+		const ctx = mockCtx({
+			description: 'Test',
+			group: '12345',
+		});
+		const options = await prepareTicketCreate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.group_id).toBe(12345);
+	});
+
+	it('handles group field as number', async () => {
+		const ctx = mockCtx({
+			description: 'Test',
+			group: 67890,
+		});
+		const options = await prepareTicketCreate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.group_id).toBe(67890);
+	});
 });
 
 describe('prepareTicketUpdate', () => {
@@ -506,6 +542,93 @@ describe('prepareTicketUpdate', () => {
 				comment: { body: 'Fixed the issue', public: true },
 			},
 		});
+	});
+
+	it('handles assigneeEmail field (numeric ID)', async () => {
+		const ctx = mockCtx({
+			assigneeEmail: '12345',
+		});
+		const options = await prepareTicketUpdate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.assignee_id).toBe(12345);
+	});
+
+	it('handles assigneeEmail field with numeric string', async () => {
+		const ctx = mockCtx({
+			assigneeEmail: '67890',
+		});
+		const options = await prepareTicketUpdate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.assignee_id).toBe(67890);
+	});
+
+	it('handles externalId field', async () => {
+		const ctx = mockCtx({
+			externalId: 'external-456',
+		});
+		const options = await prepareTicketUpdate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.external_id).toBe('external-456');
+	});
+
+	it('handles group field', async () => {
+		const ctx = mockCtx({
+			group: '12345',
+		});
+		const options = await prepareTicketUpdate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.group_id).toBe(12345);
+	});
+
+	it('handles type field', async () => {
+		const ctx = mockCtx({
+			type: 'incident',
+		});
+		const options = await prepareTicketUpdate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.type).toBe('incident');
+	});
+
+	it('handles tags field', async () => {
+		const ctx = mockCtx({
+			tags: 'tag1,tag2',
+		});
+		const options = await prepareTicketUpdate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.tags).toEqual(['tag1', 'tag2']);
+	});
+
+	it('handles all new update fields together', async () => {
+		const ctx = mockCtx({
+			subject: 'Updated',
+			status: 'solved',
+			assigneeEmail: '123',
+			externalId: 'ext-123',
+			group: '456',
+			type: 'task',
+			tags: 'urgent,priority',
+		});
+		const options = await prepareTicketUpdate.call(
+			ctx as unknown as IExecuteSingleFunctions,
+			{} as IHttpRequestOptions,
+		);
+		expect(options.body.ticket.assignee_id).toBe(123);
+		expect(options.body.ticket.external_id).toBe('ext-123');
+		expect(options.body.ticket.group_id).toBe(456);
+		expect(options.body.ticket.type).toBe('task');
+		expect(options.body.ticket.tags).toEqual(['urgent', 'priority']);
 	});
 });
 
