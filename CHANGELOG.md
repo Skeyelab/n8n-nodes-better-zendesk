@@ -1,3 +1,8 @@
+## 1.2.0 (2026-01-13)
+
+* Merge pull request #22 from Skeyelab/enhance-error-header-accessibility ([5332652](https://github.com/Skeyelab/n8n-nodes-better-zendesk/commit/5332652)), closes [#22](https://github.com/Skeyelab/n8n-nodes-better-zendesk/issues/22)
+* feat: enhance error header accessibility ([e82b29e](https://github.com/Skeyelab/n8n-nodes-better-zendesk/commit/e82b29e))
+
 ## 1.1.0 (2026-01-13)
 
 * Merge pull request #21 from Skeyelab/update-ticket-ui-match-upstream ([56b99fb](https://github.com/Skeyelab/n8n-nodes-better-zendesk/commit/56b99fb)), closes [#21](https://github.com/Skeyelab/n8n-nodes-better-zendesk/issues/21)
