@@ -3,6 +3,7 @@ import { userDescription } from './resources/user';
 import { companyDescription } from './resources/company';
 import { ticketDescription } from './resources/ticket';
 import { viewDescription } from './resources/view';
+import { ticketFieldDescription } from './resources/ticketField';
 
 export class BetterZendesk implements INodeType {
 	description: INodeTypeDescription = {
@@ -37,16 +38,20 @@ export class BetterZendesk implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
-						name: 'User',
-						value: 'user',
-					},
-					{
 						name: 'Company',
 						value: 'company',
 					},
 					{
 						name: 'Ticket',
 						value: 'ticket',
+					},
+					{
+						name: 'Ticket Field',
+						value: 'ticketField',
+					},
+					{
+						name: 'User',
+						value: 'user',
 					},
 					{
 						name: 'View',
@@ -58,6 +63,7 @@ export class BetterZendesk implements INodeType {
 			...userDescription,
 			...companyDescription,
 			...ticketDescription,
+			...ticketFieldDescription,
 			...viewDescription,
 		],
 	};
