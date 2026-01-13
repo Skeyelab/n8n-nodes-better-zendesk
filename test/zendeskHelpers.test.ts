@@ -200,6 +200,7 @@ describe('zendeskPostReceive', () => {
 			expect(error).toBeInstanceOf(NodeApiError);
 			if (error instanceof NodeApiError) {
 				expect(error.httpCode).toBe('429');
+
 				// Headers should be accessible in the error object
 				// NodeApiError exposes headers in the response property
 				const errorResponse = (error as unknown as { response?: { headers?: IDataObject } })
@@ -211,6 +212,21 @@ describe('zendeskPostReceive', () => {
 					expect(errorResponse.headers).toHaveProperty('X-Rate-Limit-Remaining');
 					expect(errorResponse.headers).toHaveProperty('X-Zendesk-Request-Id');
 				}
+
+				// Headers should also be accessible directly on error object
+				const errorWithHeaders = error as unknown as { headers?: IDataObject };
+				if (errorWithHeaders.headers) {
+					expect(errorWithHeaders.headers).toHaveProperty('Retry-After');
+					expect(errorWithHeaders.headers['Retry-After']).toBe('60');
+					expect(errorWithHeaders.headers).toHaveProperty('X-Rate-Limit-Limit');
+					expect(errorWithHeaders.headers).toHaveProperty('X-Rate-Limit-Remaining');
+					expect(errorWithHeaders.headers).toHaveProperty('X-Zendesk-Request-Id');
+				}
+
+				// Headers should be in error message for visibility
+				expect(error.message).toContain('Retry-After');
+				expect(error.message).toContain('60');
+				expect(error.message).toContain('X-Zendesk-Request-Id');
 			}
 		}
 	});
