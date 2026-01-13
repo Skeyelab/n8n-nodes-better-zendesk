@@ -83,7 +83,7 @@ export class BetterZendesk implements INodeType {
 				const credentials = await this.getCredentials('betterZendeskApi');
 				const subdomain = credentials.subdomain as string;
 				const requestOptions = {
-					method: 'GET',
+					method: 'GET' as const,
 					url: `https://${subdomain}.zendesk.com/api/v2/ticket_fields.json`,
 					json: true,
 				};
@@ -112,7 +112,7 @@ export class BetterZendesk implements INodeType {
 				const credentials = await this.getCredentials('betterZendeskApi');
 				const subdomain = credentials.subdomain as string;
 				const requestOptions = {
-					method: 'GET',
+					method: 'GET' as const,
 					url: `https://${subdomain}.zendesk.com/api/v2/groups.json`,
 					json: true,
 				};
@@ -139,7 +139,7 @@ export class BetterZendesk implements INodeType {
 				const credentials = await this.getCredentials('betterZendeskApi');
 				const subdomain = credentials.subdomain as string;
 				const requestOptions = {
-					method: 'GET',
+					method: 'GET' as const,
 					url: `https://${subdomain}.zendesk.com/api/v2/autocomplete/tags.json`,
 					json: true,
 				};
@@ -166,7 +166,7 @@ export class BetterZendesk implements INodeType {
 				const credentials = await this.getCredentials('betterZendeskApi');
 				const subdomain = credentials.subdomain as string;
 				const requestOptions = {
-					method: 'GET',
+					method: 'GET' as const,
 					url: `https://${subdomain}.zendesk.com/api/v2/locales.json`,
 					json: true,
 				};
@@ -193,7 +193,7 @@ export class BetterZendesk implements INodeType {
 				const credentials = await this.getCredentials('betterZendeskApi');
 				const subdomain = credentials.subdomain as string;
 				const requestOptions = {
-					method: 'GET',
+					method: 'GET' as const,
 					url: `https://${subdomain}.zendesk.com/api/v2/user_fields.json`,
 					json: true,
 				};
@@ -220,7 +220,7 @@ export class BetterZendesk implements INodeType {
 				const credentials = await this.getCredentials('betterZendeskApi');
 				const subdomain = credentials.subdomain as string;
 				const requestOptions = {
-					method: 'GET',
+					method: 'GET' as const,
 					url: `https://${subdomain}.zendesk.com/api/v2/organization_fields.json`,
 					json: true,
 				};
@@ -247,7 +247,7 @@ export class BetterZendesk implements INodeType {
 				const credentials = await this.getCredentials('betterZendeskApi');
 				const subdomain = credentials.subdomain as string;
 				const requestOptions = {
-					method: 'GET',
+					method: 'GET' as const,
 					url: `https://${subdomain}.zendesk.com/api/v2/organizations.json`,
 					json: true,
 				};
